@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { LogOut, Mail } from "lucide-react";
 
 export default function Navbarsub() {
   return (
@@ -8,7 +8,13 @@ export default function Navbarsub() {
         <img src="/favicon.ico" width={40} alt="Logo" />
         <h2 className="text-xl font-bold text-gray-700">EasyEvent</h2>
       </div>
-      <div>
+      <div className="flex items-center gap-4">
+        <Link
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-blue-500 transition-all duration-300"
+          href="/convites"
+        >
+          <Mail size={20} /> Meus Convites
+        </Link>
         <Link
           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-customRed to-customOrange text-white rounded-lg shadow-md hover:from-customPurple hover:to-customRed transition-all duration-300"
           href="/"

@@ -2,7 +2,7 @@ import './globals.css';
 
 export const metadata = {
   title: "Event Manager",
-  description: "Gerenciador de eventos",
+  description: "Easy Event",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
