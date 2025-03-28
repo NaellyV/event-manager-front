@@ -1,21 +1,36 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Navbarsub from "../navbarsub/page";
-import { useState } from "react";
-import Map from "../map";
+import dynamic from 'next/dynamic';
+
+// Carrega o componente Map apenas no lado do cliente
+const Map = dynamic(() => import('../map'), {
+  ssr: false,
+});
 
 export default function CreateEvent() {
-  const userId = localStorage.getItem("id");
+  const [userId, setUserId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     date: "",
     time: "",
     location: "",
-    userId: userId || "",
+    userId: "",
   });
+
   const [participants, setParticipants] = useState<string[]>([]);
   const [newParticipant, setNewParticipant] = useState("");
+
+  useEffect(() => {
+    // Garante que só roda no cliente
+    if (typeof window !== 'undefined') {
+      const id = localStorage.getItem("id");
+      setUserId(id);
+      setFormData(prev => ({ ...prev, userId: id || "" }));
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,10 +50,11 @@ export default function CreateEvent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Modo demo - salva no localStorage
     const mockEvent = {
       ...formData,
       participants,
-      id: "event-" + Math.random().toString(36).substring(2, 9), // ID fake
+      id: "event-" + Math.random().toString(36).substring(2, 9),
       createdAt: new Date().toISOString()
     };
 
@@ -47,6 +63,7 @@ export default function CreateEvent() {
 
     alert(`Evento "${mockEvent.name}" criado com sucesso! (Modo demo)\n\nParticipantes: ${participants.join(", ") || "Nenhum"}`);
     
+    // Limpa o formulário
     setFormData({
       name: "",
       description: "",
@@ -71,6 +88,7 @@ export default function CreateEvent() {
       <div className="w-full max-w-2xl bg-white p-6 mt-20 shadow-lg rounded-xl">
         <h2 className="text-3xl font-semibold text-center mb-6">Criar Evento</h2>
         
+        {/* Aviso de modo demo */}
         <div className="mb-4 p-3 bg-yellow-50 text-yellow-800 rounded-md">
           <p className="text-sm">
             ⚠️ <strong>Modo demonstração:</strong> Os dados são salvos apenas localmente.
@@ -135,15 +153,15 @@ export default function CreateEvent() {
               value={formData.location}
               onChange={handleChange}
             />
-            <button 
-              type="button" 
-              onClick={setDefaultLocation} 
+            <button
+              type="button"
+              onClick={setDefaultLocation}
               className="mt-2 text-blue-500 hover:text-blue-700 text-sm"
             >
               Usar Local Padrão
             </button>
           </div>
-        
+
           <div>
             <Map address={formData.location} />
           </div>
@@ -159,8 +177,8 @@ export default function CreateEvent() {
                 onChange={(e) => setNewParticipant(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAddParticipant()}
               />
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleAddParticipant}
                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
               >
@@ -171,8 +189,8 @@ export default function CreateEvent() {
               {participants.map((participant, index) => (
                 <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
                   <span>{participant}</span>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => handleRemoveParticipant(index)}
                     className="text-red-500 hover:text-red-700"
                   >
@@ -183,8 +201,8 @@ export default function CreateEvent() {
             </ul>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-gradient-to-r from-customRed to-customOrange text-white p-2 rounded-lg shadow-md hover:from-customPurple hover:to-customRed transition-colors mt-4"
           >
             Criar Evento
