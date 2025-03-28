@@ -1,3 +1,5 @@
+"use client";
+
 import Inicio from "@/image/page";
 import Navbar from "./navbar/page";
 import { title } from "process";
