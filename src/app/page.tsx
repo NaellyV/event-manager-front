@@ -2,7 +2,6 @@
 
 import Inicio from "@/image/page";
 import Navbar from "./navbar/page";
-import { title } from "process";
 
 export const metadata = {
   title: "Gerenciador de eventos",

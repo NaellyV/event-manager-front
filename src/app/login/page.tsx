@@ -17,12 +17,20 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   
-  useEffect(()=>{
-    const token = localStorage.getItem("token");
-    const id = localStorage.getItem("id");
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("token");
+      const id = localStorage.getItem("id");
+      
+      // If you want to use these values later, you should set them to state
+      // For now, we'll just check if they exist
+      if (token && id) {
+        router.push("/dashboard");
+      }
+    }
+  }, [router]);
 
-
-  },[router])
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -46,12 +54,11 @@ const Login = () => {
   };
 
   return (
-    
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-xl shadow-xl w-96">
-      <p className="text-sm text-gray-600 mb-4 ">
-  🔹 Para teste, use: <strong>demo@teste.com</strong> / <strong>123456</strong>
-</p>
+        <p className="text-sm text-gray-600 mb-4">
+          🔹 Para teste, use: <strong>demo@teste.com</strong> / <strong>123456</strong>
+        </p>
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
