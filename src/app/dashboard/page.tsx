@@ -28,7 +28,6 @@ export default function Dashboard() {
         .finally(() => setLoadingUserEvents(false));
     }
 
-    // Buscar todos os eventos disponíveis
     axios
       .get("http://localhost:3333/event")
       .then((res) => setPublicEvents(res.data))
@@ -38,7 +37,7 @@ export default function Dashboard() {
 
   const handleSubscribe = async (eventId: number) => {
     const userId = localStorage.getItem("id");
-    const date = new Date().toISOString(); // Aqui você pega a data atual, por exemplo
+    const date = new Date().toISOString(); 
     
     if (!userId) {
       alert("Faça login para se inscrever em um evento.");
@@ -47,9 +46,9 @@ export default function Dashboard() {
   
     try {
       await axios.post("http://localhost:3333/enrollement", {
-        user_id: userId,   // use o nome correto do campo
-        event_id: eventId, // e o nome do evento
-        date: date,        // adicione a data aqui
+        user_id: userId,  
+        event_id: eventId, 
+        date: date,       
       });
       alert("Inscrição realizada com sucesso!");
     } catch (error) {

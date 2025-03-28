@@ -4,9 +4,7 @@ import Navbarsub from "../navbarsub/page";
 import { useState } from "react";
 import Map from "../map";
 
-
 export default function CreateEvent() {
-
   const userId = localStorage.getItem("id");
   const [formData, setFormData] = useState({
     name: "",
@@ -14,7 +12,7 @@ export default function CreateEvent() {
     date: "",
     time: "",
     location: "",
-    userId,
+    userId: userId || "",
   });
   const [participants, setParticipants] = useState<string[]>([]);
   const [newParticipant, setNewParticipant] = useState("");
@@ -36,37 +34,28 @@ export default function CreateEvent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const requestData = { ...formData, userId, participants };
+    
+    const mockEvent = {
+      ...formData,
+      participants,
+      id: "event-" + Math.random().toString(36).substring(2, 9), // ID fake
+      createdAt: new Date().toISOString()
+    };
 
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3333/event", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestData),
-      });
+    const savedEvents = JSON.parse(localStorage.getItem("mockEvents") || "[]");
+    localStorage.setItem("mockEvents", JSON.stringify([...savedEvents, mockEvent]));
 
-      if (response.ok) {
-        alert("Evento criado e convites enviados!");
-        setFormData({
-          name: "",
-          description: "",
-          date: "",
-          time: "",
-          location: "",
-          userId,
-        });
-        setParticipants([]);
-      } else {
-        const error = await response.json();
-        alert(`Erro ao criar evento: ${error.error || "Erro desconhecido"}`);
-      }
-    } catch (error) {
-      alert("Erro na requisição: " + error);
-    }
+    alert(`Evento "${mockEvent.name}" criado com sucesso! (Modo demo)\n\nParticipantes: ${participants.join(", ") || "Nenhum"}`);
+    
+    setFormData({
+      name: "",
+      description: "",
+      date: "",
+      time: "",
+      location: "",
+      userId: userId || "",
+    });
+    setParticipants([]);
   };
 
   const setDefaultLocation = () => {
@@ -81,6 +70,13 @@ export default function CreateEvent() {
       <Navbarsub />
       <div className="w-full max-w-2xl bg-white p-6 mt-20 shadow-lg rounded-xl">
         <h2 className="text-3xl font-semibold text-center mb-6">Criar Evento</h2>
+        
+        <div className="mb-4 p-3 bg-yellow-50 text-yellow-800 rounded-md">
+          <p className="text-sm">
+            ⚠️ <strong>Modo demonstração:</strong> Os dados são salvos apenas localmente.
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Título</label>
@@ -139,37 +135,58 @@ export default function CreateEvent() {
               value={formData.location}
               onChange={handleChange}
             />
-            <button type="button" onClick={setDefaultLocation} className="mt-2 text-blue-500">Usar Local Padrão</button>
+            <button 
+              type="button" 
+              onClick={setDefaultLocation} 
+              className="mt-2 text-blue-500 hover:text-blue-700 text-sm"
+            >
+              Usar Local Padrão
+            </button>
           </div>
         
-
           <div>
             <Map address={formData.location} />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Participantes</label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-1">
               <input
                 type="text"
                 className="flex-1 px-4 py-2 border rounded-md"
                 placeholder="E-mail, telefone ou ID"
                 value={newParticipant}
                 onChange={(e) => setNewParticipant(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAddParticipant()}
               />
-              <button type="button" onClick={handleAddParticipant} className="bg-green-500 text-white px-4 rounded-md">+</button>
+              <button 
+                type="button" 
+                onClick={handleAddParticipant}
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+              >
+                Adicionar
+              </button>
             </div>
             <ul className="mt-2 space-y-1">
               {participants.map((participant, index) => (
-                <li key={index} className="flex justify-between items-center bg-gray-100 px-2 py-1 rounded-md">
-                  {participant}
-                  <button type="button" onClick={() => handleRemoveParticipant(index)} className="text-red-500">❌</button>
+                <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-md">
+                  <span>{participant}</span>
+                  <button 
+                    type="button" 
+                    onClick={() => handleRemoveParticipant(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remover
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
 
-          <button type="submit" className="w-full bg-gradient-to-r from-customRed to-customOrange text-white p-2 rounded-lg shadow-md hover:from-customPurple hover:to-customRed">
+          <button 
+            type="submit" 
+            className="w-full bg-gradient-to-r from-customRed to-customOrange text-white p-2 rounded-lg shadow-md hover:from-customPurple hover:to-customRed transition-colors mt-4"
+          >
             Criar Evento
           </button>
         </form>

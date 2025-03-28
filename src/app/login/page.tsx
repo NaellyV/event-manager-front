@@ -34,24 +34,27 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    try {
-      const response = await axios.post(
-        "http://localhost:3333/session",
-        formData
-      );
-      
-      localStorage.setItem("id", response.data.id)
-      localStorage.setItem("token", response.data.token.token);
+  
+    const MOCK_EMAIL = "demo@teste.com";
+    const MOCK_PASSWORD = "123456";
+    const MOCK_USER_ID = "user-123";
+  
+    if (formData.email === MOCK_EMAIL && formData.password === MOCK_PASSWORD) {
+      localStorage.setItem("id", MOCK_USER_ID);
+      localStorage.setItem("token", "fake-jwt-token");
       router.push("/dashboard");
-    } catch (err) {
-      setError(`Falha no login. Verifique suas credenciais ${err}`);
+    } else {
+      setError("Credenciais inválidas. Use: demo@teste.com / 123456");
     }
   };
 
   return (
+    
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-xl shadow-xl w-96">
+      <p className="text-sm text-gray-600 mb-4 ">
+  🔹 Para teste, use: <strong>demo@teste.com</strong> / <strong>123456</strong>
+</p>
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
