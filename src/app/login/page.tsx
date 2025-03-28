@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -22,9 +21,7 @@ const Login = () => {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("id");
 
-    // if(token||id){
-    //   router.push("/dashboard")
-    // }
+
   },[router])
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

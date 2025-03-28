@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Navbarsub from "../navbarsub/page";
-import Link from "next/link";
 
 interface Invite {
   id: number;
@@ -15,7 +14,7 @@ export default function ConvitesRecebidos() {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { //exemplo
+  useEffect(() => { 
     setTimeout(() => {
       setInvites([
         {

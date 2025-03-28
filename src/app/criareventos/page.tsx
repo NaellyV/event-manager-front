@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Navbarsub from "../navbarsub/page";
 import dynamic from 'next/dynamic';
 
-// Carrega o componente Map apenas no lado do cliente
 const Map = dynamic(() => import('../map'), {
   ssr: false,
 });
@@ -24,7 +23,6 @@ export default function CreateEvent() {
   const [newParticipant, setNewParticipant] = useState("");
 
   useEffect(() => {
-    // Garante que só roda no cliente
     if (typeof window !== 'undefined') {
       const id = localStorage.getItem("id");
       setUserId(id);

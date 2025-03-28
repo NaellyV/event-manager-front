@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -12,6 +11,15 @@ interface CadastroForm {
   confirmaSenha: string;
 }
 
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 const Cadastro = () => {
   const [formData, setFormData] = useState<CadastroForm>({
     nome: "",
@@ -19,8 +27,8 @@ const Cadastro = () => {
     senha: "",
     confirmaSenha: "",
   });
-  console.log(formData)
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,25 +39,42 @@ const Cadastro = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
 
     if (formData.senha !== formData.confirmaSenha) {
       setError("As senhas não coincidem.");
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:3333/user", {
-        name: formData.nome,
-        email: formData.email,
-        password: formData.senha,
+      const response = await fetch("http://localhost:3333/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.nome,
+          email: formData.email,
+          password: formData.senha,
+        }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao criar conta");
+      }
+
       router.push("/login");
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as ApiError;
       setError(
         `Erro ao criar conta: ${
-          err?.response?.data?.message || "Tente novamente"
+          error?.response?.data?.message || error?.message || "Tente novamente"
         }`
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -108,6 +133,7 @@ const Cadastro = () => {
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
               required
+              minLength={6}
             />
           </div>
           <div className="mb-4">
@@ -125,13 +151,17 @@ const Cadastro = () => {
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
               required
+              minLength={6}
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-gradient-to-r p-2 from-customRed to-customOrange text-white rounded-lg shadow-md hover:from-customPurple hover:to-customRed"
+            disabled={isLoading}
+            className={`w-full bg-gradient-to-r p-2 from-customRed to-customOrange text-white rounded-lg shadow-md hover:from-customPurple hover:to-customRed ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Criar conta
+            {isLoading ? "Criando conta..." : "Criar conta"}
           </button>
         </form>
         <div className="mt-4 text-center">
