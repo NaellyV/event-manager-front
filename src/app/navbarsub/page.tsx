@@ -1,12 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { LogOut, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Navbarsub() {
+  const router = useRouter();
+
   const handleLogout = () => {
-    // Add your logout logic here
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      router.push("/");
+    }
   };
 
   return (
@@ -33,15 +41,14 @@ export default function Navbarsub() {
           <span>Meus Convites</span>
         </Link>
         
-        <Link
-          href="/"
+        <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-customRed to-customOrange text-white rounded-lg shadow-md hover:from-customPurple hover:to-customRed transition-all duration-300 hover:scale-[1.03]"
           aria-label="Sair"
         >
           <LogOut size={20} aria-hidden="true" />
           <span>Sair</span>
-        </Link>
+        </button>
       </div>
     </nav>
   );
